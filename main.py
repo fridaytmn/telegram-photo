@@ -1,39 +1,29 @@
-import requests
+import os
+import time
+import random
+import telegram_space_bot
+import argparse
 from dotenv import load_dotenv
-from pathlib import Path
-from pprint import pprint
-from os import path, environ
-from urllib import parse
-from datetime import datetime
 
 
-def fetch_epic_photos():
-    token = environ['NASA_TOKEN']
-    link = 'https://api.nasa.gov/EPIC/api/natural'
-    params = {'api_key': token}
-    try:
-        responce = requests.get(link, params=params)
-        responce.raise_for_status()
-    except:
-        pass
-    responce = responce.json()
-    for number, photo in enumerate(responce[-5:]):
-        photo_date = datetime.strptime(photo['date'], '%Y-%m-%d %H:%M:%S')
-        image = photo['image']
-        link_foto = 'https://api.nasa.gov/EPIC/archive/natural'
-        url_for_foto = f'{link_foto}/{photo_date.year}/{photo_date.month:0{2}}/{photo_date.day:0{2}}/png/{image}.png'
-        responce = requests.get(url_for_foto, params=params)
-        responce.raise_for_status()
-        
-        with open(f'images/epic_{number}.png', 'wb') as file:
-            file.write(responce.content)
+def create_parser():
+
+    parser = argparse.ArgumentParser(description='Задает интервал публикации постов')
+    parser.add_argument('--hour', default=4, help='Интервал публикаций')
+    return parser
 
 
 def main():
-
     load_dotenv()
-
-    fetch_epic_photos()
+    BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+    CHAT_ID = os.environ['CHAT_ID']
+    interval = int(create_parser().parse_args().hour) * 60 * 60
+    while True:
+        photo_files = os.listdir('images')
+        random.shuffle(photo_files)
+        for photo in photo_files:
+            telegram_space_bot.send_photo_to_tg(BOT_TOKEN, CHAT_ID, photo)
+            time.sleep(interval)
 
 
 if __name__ == '__main__':

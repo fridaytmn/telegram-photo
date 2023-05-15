@@ -1,10 +1,14 @@
 import telegram
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
 
-BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
-bot = telegram.Bot(token='6002224684:AAEoFSTjFYCRRRqgu3ampD0I_3iBax2_Vzk')
-print(bot.get_me())
-bot.send_photo(chat_id='-1001514356106', photo=open('images/SpaceX_0.jpg', 'rb'))
+def send_photo_to_tg(BOT_TOKEN, CHAT_ID, filename):
+    bot = telegram.Bot(token=BOT_TOKEN)
+    bot.send_photo(chat_id=CHAT_ID, photo=open(f'images/{filename}', 'rb'))
+
+
+def main():
+    pass
+
+
+if __name__ == '__main__':
+    main()

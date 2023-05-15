@@ -23,7 +23,6 @@ def create_parser():
 
 
 def main():
-
     parser = create_parser()
     id = parser.parse_args().id
     try:
